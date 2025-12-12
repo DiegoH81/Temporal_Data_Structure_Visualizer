@@ -26,6 +26,7 @@ class LinkedList{
         if(!this.#head)
         {
             this.#head = new NodeLinkedList(inValue);
+            this.#tail = this.#head;
         }
         else
         {
@@ -40,7 +41,8 @@ class LinkedList{
     {
         if(!this.#tail)
         {
-            this.#tail = new NodeLinkedList(inValue);
+            this.#head = new NodeLinkedList(inValue);
+            this.#tail = this.#head;            
         }
         else
         {
@@ -53,12 +55,18 @@ class LinkedList{
 
     popFront()
     {
-        if(_size <= 0) return undefined;
+        if(this.#_size <= 0) return undefined;
 
-        let returnValue = this.#head.value;
-        let temp = this.#head.next;
-        this.#head = null;
-        this.#head = temp;
+        if(this.#_size == 1){
+            this.#head = null;
+            this.#tail = null;
+        }
+        else
+        {
+            let returnValue = this.#head.value;
+            this.#head = this.#head.next;
+        }
+
 
         this.#_size--;
         return returnValue;
@@ -66,15 +74,23 @@ class LinkedList{
 
     popBack()
     {
-        if(_size <= 0) return undefined;
+        if(this.#_size <= 0) return undefined;
         let returnValue = this.#tail.value;
 
-        let iteratorNode = this.#head;
-        while(iteratorNode.next != this.#tail){
-            iteratorNode = iteratorNode.next;
+        if(this.#_size == 1){
+            this.#head = null;
+            this.#tail = null;
         }
-        this.#tail = null;
-        this.#tail = iteratorNode;
+        else
+        {
+            let iteratorNode = this.#head;
+            while(iteratorNode.next != this.#tail){
+                iteratorNode = iteratorNode.next;
+            }
+            this.#tail = iteratorNode;
+            this.#tail.next = null;
+        }
+
 
         this.#_size--;
         return returnValue;
