@@ -1,4 +1,4 @@
-class NodeLinkedList{
+class NodeCircularLinkedList{
     value;
     next;
 
@@ -9,7 +9,7 @@ class NodeLinkedList{
     }
 }
 
-class LinkedList{
+class CircularLinkedList{
     #head;
     #tail;
     #_size;
@@ -25,13 +25,13 @@ class LinkedList{
     {
         if(!this.#head)
         {
-            this.#head = new NodeLinkedList(inValue);
+            this.#head = new NodeCircularLinkedList(inValue);
             this.#head.next = this.#head; 
             this.#tail = this.#head;
         }
         else
         {
-            let temp = new NodeLinkedList(inValue, this.#head);
+            let temp = new NodeCircularLinkedList(inValue, this.#head);
             this.#head = temp;
             this.#tail.next = this.#head;
         }
@@ -43,13 +43,13 @@ class LinkedList{
     {
         if(!this.#tail)
         {
-            this.#head = new NodeLinkedList(inValue);
+            this.#head = new NodeCircularLinkedList(inValue);
             this.#head.next = this.#head; 
             this.#tail = this.#head;
         }
         else
         {
-            this.#tail.next = new NodeLinkedList(inValue, this.#head);
+            this.#tail.next = new NodeCircularLinkedList(inValue, this.#head);
             this.#tail = this.#tail.next;
         }
         
@@ -61,10 +61,17 @@ class LinkedList{
         if(this.#_size <= 0) return undefined;
 
         let returnValue = this.#head.value;
-        let temp = this.#head.next;
-        this.#head = null;
-        this.#head = temp;
-        this.#tail.next = this.#head;
+        if(this.#_size == 1)
+        {
+            this.#head = null;
+            this.#tail = null;
+        }
+        else
+        {
+            this.#head = this.#head.next;
+            this.#tail.next = this.#head;
+        }
+
 
         this.#_size--;
         return returnValue;
@@ -75,13 +82,21 @@ class LinkedList{
         if(this.#_size <= 0) return undefined;
         let returnValue = this.#tail.value;
 
-        let iteratorNode = this.#head;
-        while(iteratorNode.next != this.#tail){
-            iteratorNode = iteratorNode.next;
+        if(this.#_size == 1)
+        {
+            this.#head = null;
+            this.#tail = null;
         }
-        this.#tail = null;
-        this.#tail = iteratorNode;
-        this.#tail.next = this.#head;
+        else
+        {
+            let iteratorNode = this.#head;
+            while(iteratorNode.next != this.#tail){
+                iteratorNode = iteratorNode.next;
+            }
+            this.#tail = iteratorNode;
+            this.#tail.next = this.#head;
+        }
+
 
         this.#_size--;
         return returnValue;
