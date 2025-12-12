@@ -1,18 +1,59 @@
+class NodeQueue{
+    value;
+    next;
+
+    constructor(inValue, inNext = null)
+    {
+        this.value = inValue;
+        this.next = inNext;
+    }
+}
+
 class Queue{
-    #data;
+    #head;
+    #tail;
+    #_size;
 
     constructor()
     {
-        this.#data = [];
+        this.#head = null;
+        this.#tail = null;
+        this.#_size = 0;
     }
 
     push(inValue)
     {
-        this.#data.push(inValue);
+        if(!this.#tail)
+        {
+            this.#head = new NodeQueue(inValue);
+            this.#tail = this.#head;
+        }
+        else
+        {
+            this.#tail.next = new NodeQueue(inValue);
+            this.#tail = this.#tail.next;
+        }
+        
+        this.#_size++;
     }
 
     pop()
     {
-        this.#data.shift()
+        if(this.#_size <= 0) return undefined;
+
+        let returnValue = this.#head.value;
+        if(this.#_size == 1)
+        {
+            this.#head = null;
+            this.#tail = null;
+        }
+        else
+        {
+            this.#head = this.#head.next;
+        }
+
+
+        this.#_size--;
+        return returnValue;
     }
 }
