@@ -21,6 +21,9 @@ class Vector
 
     popBack()
     {
+        if (this.#data.length <= 0)
+            return undefined;
+        
         return this.#data.pop();
     }
 
@@ -31,17 +34,25 @@ class Vector
     
     remove(inIdx)
     {
+        if (this.#data.length <= 0 || inIdx >= this.#data.length || inIdx < 0)
+            return undefined;
+        
         this.#data.splice(inIdx, 1);
     }
 
     // Getter & setter
     get(inIdx)
     {
+        if (inIdx >= this.#data.length || inIdx < 0)
+            return undefined;
+
         return this.#data[inIdx];
     }
 
     set(inIdx, inValue)
     {
+        if (inIdx >= this.#data.length || inIdx < 0)
+            return undefined;
         this.#data[inIdx] = inValue;
     }
 }
