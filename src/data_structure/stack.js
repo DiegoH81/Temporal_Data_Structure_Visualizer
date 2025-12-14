@@ -1,32 +1,54 @@
+class NodeStack
+{
+    value;
+    next;
+
+    constructor(inValue, inNext = null)
+    {
+        this.value = inValue;
+        this.next = inNext;
+    }
+}
+
 class Stack
 {
-    #data;
+    #head;
+    #_size;
 
     // Constructor
     constructor()
     {
-        this.#data = []
+        this.#head = null;
+        this.#_size = 0;
     }
     
     // Functions
     size()
     {
-        return this.#data.length;
+        return this.#_size;
     }
 
     push(inValue)
     {
-        this.#data.push(inValue);
+        this.#head = new NodeStack(inValue, this.#head);
+        this.#_size++;
     }
 
     pop()
     {
-        return this.#data.pop();
+        if (this.#head != null)
+        {
+            this.#head = this.#head.next;
+            this.#_size--;
+        }
     }
 
     // Getter
     top()
     {
-        return this.#data[this.#data.length - 1];
+        if (this.#head != null)
+            return this.#head.value;
+
+        return undefined;
     }
 }
