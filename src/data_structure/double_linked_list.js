@@ -38,9 +38,7 @@ class DoubleLinkedList
     {
         let node = new NodeDoubleLinkedList(inValue);
         if (this.#_size == 0)
-        {
             this.#head = this.#tail = node;
-        }
         else
         {
             this.#tail.next = node;
@@ -55,9 +53,7 @@ class DoubleLinkedList
     {
         let node = new NodeDoubleLinkedList(inValue);
         if (this.#_size == 0)
-        {
             this.#head = this.#tail = node;
-        }
         else
         {
             this.#head.prev = node;
