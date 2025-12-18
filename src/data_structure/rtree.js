@@ -30,6 +30,7 @@ class Rect
 }
 
 const MAX_ENTRIES = 4;
+const MIN_ENTRIES = Math.ceil(MAX_ENTRIES / 2);
 
 class Entry 
 {
@@ -80,7 +81,7 @@ class RTree {
         let sibling = null;
         if (node.entries.length > MAX_ENTRIES) 
         {
-            sibling = this.splitNodeGreene(node);
+            sibling = this.splitNodeQuadratic(node);
         }
 
         this.adjustTree(path, node, sibling);
@@ -107,97 +108,121 @@ class RTree {
 
    adjustTree(inPath, inNode, inSibling) 
    {
-    let node = inNode;
-    let sibling = inSibling;
+        let node = inNode;
+        let sibling = inSibling;
 
-    for (let i = inPath.length - 1; i >= 0; i--) 
-    {
-        let parent = inPath[i].node;
-        let childIndex = inPath[i].index;
+        for (let i = inPath.length - 1; i >= 0; i--) 
+        {
+            let parent = inPath[i].node;
+            let childIndex = inPath[i].index;
 
-        parent.entries[childIndex].rect = this.boundingRect(node.entries);
+            parent.entries[childIndex].rect = this.boundingRect(node.entries);
+
+            if (sibling) 
+            {
+                parent.entries.push(
+                    new Entry(this.boundingRect(sibling.entries), sibling)
+                );
+
+                if (parent.entries.length > MAX_ENTRIES) 
+                {
+                    sibling = this.splitNodeQuadratic(parent);
+                } 
+                else
+                {
+                    sibling = null;
+                }
+            }
+            
+            node = parent;
+        }
 
         if (sibling) 
         {
-            parent.entries.push(
-                new Entry(this.boundingRect(sibling.entries), sibling)
-            );
+            let oldRoot = this.root;
+            this.root = new Node(false);
+            this.root.entries.push(new Entry(this.boundingRect(oldRoot.entries), oldRoot));
+            this.root.entries.push(new Entry(this.boundingRect(sibling.entries), sibling));
+        }
+    }
 
-            if (parent.entries.length > MAX_ENTRIES) 
-            {
-                sibling = this.splitNodeGreene(parent);
-            } 
-            else
-            {
-                sibling = null;
+    pickSeeds(inEntries) {
+        let maxWaste = -Infinity;
+        let seed1 = 0;
+        let seed2 = 1;
+
+        for (let i = 0; i < inEntries.length; i++) {
+            for (let j = i + 1; j < inEntries.length; j++) {
+                const r1 = inEntries[i].rect;
+                const r2 = inEntries[j].rect;
+                const combined = r1.combine(r2);
+
+                const waste = combined.area() - r1.area() - r2.area();
+
+                if (waste > maxWaste) {
+                    maxWaste = waste;
+                    seed1 = i;
+                    seed2 = j;
+                }
             }
         }
-        
-        node = parent;
+        return [seed1, seed2];
     }
 
-    if (sibling) 
-    {
-        let oldRoot = this.root;
-        this.root = new Node(false);
-        this.root.entries.push(new Entry(this.boundingRect(oldRoot.entries), oldRoot));
-        this.root.entries.push(new Entry(this.boundingRect(sibling.entries), sibling));
-    }
-}
+    splitNodeQuadratic(node) {
+        const entries = node.entries;
+        node.entries = [];
 
-    splitNodeGreene(inNode) 
-    {
-        let axis = this.chooseAxis(inNode);
-        return this.distribute(inNode, axis);
-    }
+        const sibling = new Node(node.isLeaf);
 
-    chooseAxis(inNode) 
-    {
-        let hx = -Infinity, lx = Infinity;
-        let hy = -Infinity, ly = Infinity;
-        let maxx = -Infinity, minx = Infinity;
-        let maxy = -Infinity, miny = Infinity;
+        const [i1, i2] = this.pickSeeds(entries);
 
-        for (let e of inNode.entries) 
-        {
-            hx = Math.max(hx, e.rect.minX);
-            lx = Math.min(lx, e.rect.maxX);
-            hy = Math.max(hy, e.rect.minY);
-            ly = Math.min(ly, e.rect.maxY);
+        const e1 = entries[i1];
+        const e2 = entries[i2];
 
-            maxx = Math.max(maxx, e.rect.maxX);
-            minx = Math.min(minx, e.rect.minX);
-            maxy = Math.max(maxy, e.rect.maxY);
-            miny = Math.min(miny, e.rect.minY);
+        const remaining = entries.filter((_, i) => i !== i1 && i !== i2);
+
+        node.entries.push(e1);
+        sibling.entries.push(e2);
+
+        while (remaining.length > 0) {
+
+            if (node.entries.length + remaining.length === MIN_ENTRIES) {
+                node.entries.push(...remaining);
+                break;
+            }
+
+            if (sibling.entries.length + remaining.length === MIN_ENTRIES) {
+                sibling.entries.push(...remaining);
+                break;
+            }
+
+            let bestIdx = 0;
+            let bestDiff = -Infinity;
+            let assignToNode = true;
+
+            const rectNode = this.boundingRectOf(node.entries);
+            const rectSibling = this.boundingRectOf(sibling.entries);
+
+            for (let i = 0; i < remaining.length; i++) {
+                const e = remaining[i];
+
+                const enlargeNode = rectNode.combine(e.rect).area() - rectNode.area();
+
+                const enlargeSibling = rectSibling.combine(e.rect).area() - rectSibling.area();
+
+                const diff = Math.abs(enlargeNode - enlargeSibling);
+
+                if (diff > bestDiff) {
+                    bestDiff = diff;
+                    bestIdx = i;
+                    assignToNode = enlargeNode < enlargeSibling;
+                }
+            }
+
+            const chosen = remaining.splice(bestIdx, 1)[0];
+            (assignToNode ? node.entries : sibling.entries).push(chosen);
         }
-
-        let rangeX = maxx - minx;
-        let rangeY = maxy - miny;
-
-        let gapX = rangeX > 0 ? (hx - lx) / rangeX : 0;
-        let gapY = rangeY > 0 ? (hy - ly) / rangeY : 0;
-
-        if (gapX === 0 && gapY === 0) 
-        {
-            return rangeY > rangeX ? 1 : 0;
-        }
-
-        return gapX > gapY ? 0 : 1;
-    }
-
-    distribute(inNode, inAxis) 
-    {
-        let es = inNode.entries;
-
-        if (inAxis === 0)
-            es.sort((a, b) => a.rect.minX - b.rect.minX);
-        else
-            es.sort((a, b) => a.rect.minY - b.rect.minY);
-
-        let sibling = new Node(inNode.isLeaf);
-
-        let half = Math.floor(es.length / 2);
-        sibling.entries = es.splice(0, half);
 
         return sibling;
     }
