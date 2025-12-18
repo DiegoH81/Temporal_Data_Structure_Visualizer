@@ -201,8 +201,8 @@ class RTree {
             let bestDiff = -Infinity;
             let assignToNode = true;
 
-            const rectNode = this.boundingRectOf(node.entries);
-            const rectSibling = this.boundingRectOf(sibling.entries);
+            const rectNode = this.boundingRect(node.entries);
+            const rectSibling = this.boundingRect(sibling.entries);
 
             for (let i = 0; i < remaining.length; i++) {
                 const e = remaining[i];
