@@ -182,4 +182,172 @@ class RedBlackTree
         }
     }
 
+    erase(inValue)
+    {
+        let node = this.#find(inValue, this.#root);
+        if (node == null)
+            return;
+
+        
+        let originalColor = node.color;
+
+        if (node.left == null)
+            this.#transplant(node, node.right);
+        else if (node.right == null)
+            this.#transplant(node, node.left);
+        else // Both childs
+        {
+            let maximumNode = this.#maximum(node);
+            let yOriginalColor = maximumNode.color;
+
+            let x = maximumNode.left;
+            
+            if (maximumNode.parent != node)
+            {
+                this.#transplant(maximumNode, maximumNode.left);
+
+                maximumNode.left = node.left;
+                maximumNode.left.parent = maximumNode;
+            }
+
+            this.#transplant(node, maximumNode);
+            maximumNode.right = node.right;
+            maximumNode.right.parent = maximumNode;
+            maximumNode.color = node.color;
+
+            if (yOriginalColor == "black")
+                this.#deleteFixup(node);
+        }
+    }
+
+
+    #find(inValue, inPtr)
+    {
+        let node = this.#root;
+        while(node != null && node.value != inValue)
+        {
+            if(inValue < node.value)
+                node = node.left;
+            else
+                node = node.right;
+        }
+
+        return node;
+    }
+
+    #transplant(inU, inV)
+    {
+        if (inU.parent == null)
+            this.#root = inV;
+        else if (inU == inU.parent.left)
+            inU.parent.left = inV;
+        else
+            inU.parent.right = inV;
+
+        if (inV != null)
+            inV.parent = inU.parent;
+    }
+
+    #maximum(inNode)
+    {
+        let toReturn = inNode.left;
+
+        while(toReturn != null && toReturn.right != null)
+            toReturn = toReturn.right;
+
+        return toReturn;
+    }
+
+    #deleteFixup(x)
+    {
+        while(x != this.#root && x.color == "black")
+        {
+            if (x == x.parent.left)
+            {
+                // Case 1
+                let w = x.parent.right;
+                if (w.color == "red")
+                {
+                    w.color = "black";
+                    x.parent.color = "red";
+                    this.#leftRotate(x.parent);
+                    w = x.parent.right;
+                }
+
+                // Case 2
+                if ((w.left == null || w.left.color == "black") &&
+                    (w.right == null || w.right.color == "black"))
+                {
+                    w.color = "red";
+                    x = x.parent;
+                }
+                else
+                {
+                    // Case 3
+                    if (w.right == null || w.right.color == "black")
+                    {
+                        if (w.left != null)
+                            w.left.color = "black";
+
+                        w.color = "red";
+                        this.#rightRotate(w);
+                        w = x.parent.right;
+                    }
+
+                    // Case 4
+                    w.color = x.parent.color;
+                    x.parent.color = "black";
+                    if (w.right != null)
+                        w.right.color = "black";
+
+                    this.#leftRotate(x.parent);
+                    x = this.#root;
+                }
+            }
+            else
+            {
+                // Case 1
+                let w = x.parent.left;
+                if (w.color == "red")
+                {
+                    w.color = "black";
+                    x.parent.color = "red";
+                    this.#rightRotate(x.parent);
+                    w = x.parent.left;
+                }
+
+                // Case 2
+                if ((w.left == null || w.left.color == "black") &&
+                    (w.right == null || w.right.color == "black"))
+                {
+                    w.color = "red";
+                    x = x.parent;
+                }
+                else
+                {
+                    // Case 3
+                    if (w.left == null || w.left.color == "black")
+                    {
+                        if (w.right != null)
+                            w.right.color = "black";
+
+                        w.color = "red";
+                        this.#leftRotate(w);
+                        w = x.parent.left;
+                    }
+
+                    // Case 4
+                    w.color = x.parent.color;
+                    x.parent.color = "black";
+                    if (w.left != null)
+                        w.left.color = "black";
+
+                    this.#rightRotate(x.parent);
+                    x = this.#root;
+                }
+            }                
+        }
+
+        x.color = "black";
+    }
 }
