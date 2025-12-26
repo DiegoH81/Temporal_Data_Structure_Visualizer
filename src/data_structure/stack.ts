@@ -23,20 +23,20 @@ class Stack
     }
     
     // Functions
-    public size()
+    public size() : number
     {
         return this._size;
     }
 
-    public push(inValue: number)
+    public push(inValue: number): void
     {
         this.head = new NodeStack(inValue, this.head);
         this._size++;
     }
 
-    public pop()
+    public pop(): void
     {
-        if (this.head != null)
+        if (this.head)
         {
             this.head = this.head.next;
             this._size--;
@@ -44,7 +44,7 @@ class Stack
     }
 
     // Getter
-    public top()
+    public top(): number | undefined
     {
         if (this.head != null)
             return this.head.value;
