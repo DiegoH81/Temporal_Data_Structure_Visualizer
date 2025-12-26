@@ -1,13 +1,13 @@
 class NodeBPlusTree
 {
-    keys;
-    childs;
-    size;
-    isLeaf;
-    next;
+    public keys: number[];
+    public childs: (NodeBPlusTree | null)[];
+    public size: number;
+    public isLeaf: boolean;
+    public next: NodeBPlusTree | null;
 
     // Constructor
-    constructor(inOrder, inIsLeaf = true)
+    constructor(inIsLeaf = true)
     {
         this.keys = [];
         this.childs = [];
@@ -19,37 +19,38 @@ class NodeBPlusTree
 
 class BPlusTree
 {
-    #root;
-    #order;
-    #_size;
+    private root: NodeBPlusTree | null;
+    private order: number;
+    private _size: number;
 
     // Constructor
-    constructor(inOrder)
+    constructor(inOrder: number)
     {
-        this.#root = null;
-        this.#_size = 0;
-        this.#order = inOrder;
+        this.root = null;
+        this._size = 0;
+        this.order = inOrder;
     }
 
 
     // Functions
-    size()
+    public size(): number
     {
-        return this.#_size;
+        return this._size;
     }
     
 
-    insert(inValue)
+    public insert(inValue: number): void
     {
-        this.#root = this.#insert(inValue, this.#root, null);
-        this.#_size++;
+        this.root = this.recursiveInsert(inValue, this.root, null);
+        this._size++;
     }
 
-    #insert(inValue, inPtr, inParent)
+    private recursiveInsert(inValue: number, inPtr: NodeBPlusTree | null,
+                                             inParent: NodeBPlusTree | null): NodeBPlusTree | null
     {
-        if (!inPtr)
+        if (!inPtr) // New leaf
         {
-            let tempNode = new NodeBPlusTree(this.#order, leaf);
+            let tempNode: NodeBPlusTree = new NodeBPlusTree(true);
             tempNode.keys.push(inValue);
             tempNode.size++;
             return tempNode;
@@ -57,7 +58,7 @@ class BPlusTree
 
         if (inPtr.isLeaf)
         {
-            let idx = 0
+            let idx: number = 0
 
             while(idx < inPtr.size && inValue > inPtr.keys[idx])
                 idx++;
@@ -70,8 +71,8 @@ class BPlusTree
         }
         else
         {
-            let found = false;
-            let i = 0;
+            let found: boolean = false;
+            let i: number = 0;
             for (i; i < inPtr.size; i++)
             {
                 if (inValue < inPtr.keys[i])
@@ -82,31 +83,32 @@ class BPlusTree
             }
 
             if (found) // Found
-                this.#insert(inValue, inPtr.childs[i], inPtr);
+                this.recursiveInsert(inValue, inPtr.childs[i], inPtr);
             else
-                this.#insert(inValue, inPtr.childs[inPtr.size], inPtr); // Last check this
+                this.recursiveInsert(inValue, inPtr.childs[inPtr.size], inPtr); // Last check this
         }
         
-        let grow = false;
+        let grow: boolean = false;
 
-        if (inPtr.isLeaf && inPtr.size >= (this.#order - 1))
+        if (inPtr.isLeaf && inPtr.size >= (this.order - 1))
             grow = true;
-        else if (!inPtr.isLeaf && inPtr.size > this.#order)
+        else if (!inPtr.isLeaf && inPtr.size > this.order)
             grow = true;
 
 
         if (grow)
         {
             // Split
-            let mid = Math.floor(inPtr.size / 2);
+            let mid: number = Math.floor(inPtr.size / 2);
 
-            let newNode = new NodeBPlusTree(this.#order);
+            let newNode = new NodeBPlusTree(false);
 
             if (inPtr.isLeaf)
             {
-                
-                let left = inPtr.keys.slice(0, mid);
-                let right = inPtr.keys.slice(mid);
+                newNode.isLeaf = true;
+
+                let left: number[] = inPtr.keys.slice(0, mid);
+                let right: number[] = inPtr.keys.slice(mid);
 
                 inPtr.keys = left;
                 inPtr.size = inPtr.keys.length;
@@ -118,11 +120,11 @@ class BPlusTree
             }
             else
             {
-                let leftChilds = inPtr.childs.slice(0, mid);
-                let rightChilds = inPtr.childs.slice(mid);
+                let leftChilds: (NodeBPlusTree | null)[] = inPtr.childs.slice(0, mid);
+                let rightChilds: (NodeBPlusTree | null)[] = inPtr.childs.slice(mid);
 
-                let leftKeys = inPtr.keys.slice(0, mid);
-                let rightKeys = inPtr.keys.slice(mid);
+                let leftKeys: number[] = inPtr.keys.slice(0, mid);
+                let rightKeys: number[] = inPtr.keys.slice(mid);
 
                 inPtr.childs = leftChilds;
                 inPtr.size = inPtr.childs.length;
@@ -134,24 +136,24 @@ class BPlusTree
             }
 
             // Key
-            let front = newNode.keys[0];
+            let front: number = newNode.keys[0];
             
             if (inParent == null) // Root grows
             {
-                let newRoot = new NodeBPlusTree(this.#order);
+                let newRoot: NodeBPlusTree = new NodeBPlusTree(false);
                 newRoot.childs.push(inPtr);
                 newRoot.childs.push(newNode);
 
                 newRoot.keys.push(front);
 
                 newRoot.size = 1;
-                this.#root = newRoot;
+                this.root = newRoot;
             }
             else
             {
                 // FIND POS
 
-                let idx = 0
+                let idx: number= 0
 
                 while(idx < inParent.size && front > inParent.keys[idx])
                     idx++;
