@@ -1,8 +1,8 @@
 class NodeLinkedList{
-    value;
-    next;
+    value: number;
+    next: NodeLinkedList | null;
 
-    constructor(inValue, inNext = null)
+    constructor(inValue: number, inNext: NodeLinkedList | null = null)
     {
         this.value = inValue;
         this.next = inNext;
@@ -10,9 +10,9 @@ class NodeLinkedList{
 }
 
 class LinkedList{
-    #head;
-    #tail;
-    #_size;
+    #head: NodeLinkedList | null;
+    #tail: NodeLinkedList | null;
+    #_size: number;
 
     constructor()
     {
@@ -21,7 +21,7 @@ class LinkedList{
         this.#_size = 0;
     }
 
-    pushFront(inValue)
+    pushFront(inValue: number): void
     {
         if(!this.#head)
         {
@@ -37,7 +37,7 @@ class LinkedList{
         this.#_size++;
     }
 
-    pushBack(inValue)
+    pushBack(inValue: number): void
     {
         if(!this.#tail)
         {
@@ -53,9 +53,11 @@ class LinkedList{
         this.#_size++;
     }
 
-    popFront()
+    popFront(): number | undefined
     {
-        if(this.#_size <= 0) return undefined;
+        if(this.#_size <= 0 || this.#head == null) return undefined;
+
+        let returnValue: number = this.#head.value;
 
         if(this.#_size == 1){
             this.#head = null;
@@ -63,18 +65,16 @@ class LinkedList{
         }
         else
         {
-            let returnValue = this.#head.value;
             this.#head = this.#head.next;
         }
-
 
         this.#_size--;
         return returnValue;
     }
 
-    popBack()
+    popBack(): number | undefined
     {
-        if(this.#_size <= 0) return undefined;
+        if(this.#_size <= 0 || this.#tail == null) return undefined;
         let returnValue = this.#tail.value;
 
         if(this.#_size == 1){
@@ -83,12 +83,15 @@ class LinkedList{
         }
         else
         {
-            let iteratorNode = this.#head;
-            while(iteratorNode.next != this.#tail){
+            let iteratorNode: NodeLinkedList | null = this.#head;
+            while(iteratorNode != null && iteratorNode.next != this.#tail){
                 iteratorNode = iteratorNode.next;
             }
             this.#tail = iteratorNode;
-            this.#tail.next = null;
+
+            if (this.#tail !== null) {
+                this.#tail.next = null;
+            }
         }
 
 
