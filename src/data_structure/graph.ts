@@ -26,4 +26,10 @@ class Graph
 
         this.nEdges++;
     }
+
+    // Travel
+    public travel(): number[][]
+    {
+        return this.data;
+    }
 }
