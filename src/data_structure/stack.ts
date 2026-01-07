@@ -51,4 +51,19 @@ class Stack
 
         return undefined;
     }
+
+    // Travel
+    public travel() : number[]
+    {
+        let data: number[] = [];
+
+        let tmp : NodeStack | null = this.head;
+        while(tmp != null)
+        {
+            data.push(tmp.value);
+            tmp = tmp.next;
+        }
+
+        return data.reverse();
+    }
 }
