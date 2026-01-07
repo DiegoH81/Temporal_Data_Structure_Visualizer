@@ -100,9 +100,9 @@ class BTree
     }
 
     // Travel
-    public travel() :DrawNode[]
+    public travel() :DrawNode<number>[]
     {
-        let data: DrawNode[] = []
+        let data: DrawNode<number>[] = []
 
         let currentId: number = 0;
         let queue = new QueueAUX<NodeItem<NodeBTree>>();
@@ -131,15 +131,15 @@ class BTree
                       
             if (top.node.left)
                 queue.push({node: top.node.left,
-                level: top.level + 1,
-                parentId : nodeId
-            });
+                            level: top.level + 1,
+                            parentId : nodeId
+                            });
                 
             if (top.node.right)
                 queue.push({node: top.node.right,
-                level: top.level + 1,
-                parentId : nodeId
-            });
+                            level: top.level + 1,
+                            parentId : nodeId
+                            });
             
             currentId++;
         }

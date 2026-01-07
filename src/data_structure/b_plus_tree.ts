@@ -1,3 +1,7 @@
+import { type DrawNode } from "../utils/draw_node";
+import { type NodeItem } from "../utils/nodeItem";
+import { QueueAUX } from "../utils/queueAUX";
+
 class NodeBPlusTree
 {
     public keys: number[];
@@ -174,5 +178,50 @@ class BPlusTree
         }
 
         return inPtr;
+    }
+
+    // Travel
+    public travel() :DrawNode<number[]>[]
+    {
+        let data: DrawNode<number[]>[] = []
+
+        let currentId: number = 0;
+        let queue = new QueueAUX<NodeItem<NodeBPlusTree>>();
+        
+        if (!this.root)
+            return data;
+        
+        queue.push({node: this.root,
+                    level: 0,
+                    parentId : null
+                    });
+        
+        
+        while (true)
+        {
+            let top = queue.pop();
+            let nodeId: number = currentId;
+            if (!top)
+                break;
+            
+            data.push({id: nodeId,
+                        value: top.node.keys,
+                        level: top.level,
+                        parentId: top.parentId});
+            
+            for (let i = 0; i < top.node.childs.length; i++)
+            {
+                let child = top.node.childs[i];
+                if (child)
+                    queue.push({node: child,
+                                level: top.level + 1,
+                                parentId : nodeId
+                                });
+            }
+            
+            currentId++;
+        }
+        
+        return data;
     }
 }
