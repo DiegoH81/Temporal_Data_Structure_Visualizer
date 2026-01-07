@@ -1,0 +1,14 @@
+.presentation-card{
+    color: black;
+    background-color: azure;
+    
+    height: 200px;
+    width: 350px;
+
+    margin: 10px;
+}
+
+.presentation-card > img {
+    height: 100%;
+    width: 100%;
+}
