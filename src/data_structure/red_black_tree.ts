@@ -1,3 +1,7 @@
+import { type DrawNode } from "../utils/draw_node";
+import { type NodeItem } from "../utils/nodeItem";
+import { QueueAUX } from "../utils/queueAUX";
+
 class NodeRedBlackTree
 {
     public value: number;
@@ -351,5 +355,53 @@ class RedBlackTree
         }
 
         x!.color = "black";
+    }
+
+    // Travel
+    public travel() :DrawNode<number>[]
+    {
+        let data: DrawNode<number>[] = []
+
+        let currentId: number = 0;
+        let queue = new QueueAUX<NodeItem<NodeRedBlackTree>>();
+        
+        if (!this.root)
+            return data;
+        
+        queue.push({node: this.root,
+                    level: 0,
+                    parentId : null
+                    });
+        
+        
+        while (true)
+        {
+            let top = queue.pop();
+            let nodeId: number = currentId;
+            if (!top)
+                break;
+            
+            data.push({id: nodeId,
+                        value: top.node.value,
+                        level: top.level,
+                        parentId: top.parentId});
+            
+                        
+            if (top.node.left)
+                queue.push({node: top.node.left,
+                            level: top.level + 1,
+                            parentId : nodeId
+                            });
+                
+            if (top.node.right)
+                queue.push({node: top.node.right,
+                            level: top.level + 1,
+                            parentId : nodeId
+                            });
+            
+            currentId++;
+        }
+        
+        return data;
     }
 }
