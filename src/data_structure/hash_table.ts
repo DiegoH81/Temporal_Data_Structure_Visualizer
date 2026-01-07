@@ -1,3 +1,5 @@
+import { type Pair } from "../utils/pair";
+
 class NodeHash
 {
     public key: number;
@@ -150,5 +152,31 @@ class HashTable
 
         if (this._size > this.loadFactor * this.bucketsSize)
             this.rehash();
+    }
+
+    // Travel
+
+    public travel(): (Pair<number, number>[] | null)[]
+    {
+        let data: (Pair<number, number>[] | null)[] = []
+        for (let i = 0; i < this.bucketsSize; i++)
+        {
+            let currentBucket : Pair<number, number>[] = [];
+
+            if (this.buckets[i])
+            {
+                let tmp = this.buckets[i]
+                while (tmp)
+                {
+                    currentBucket.push({first: tmp.key, second: tmp.value});
+                    tmp = tmp.next;
+                }
+                data.push(currentBucket);
+            }
+            else
+                data.push(null);
+        }
+
+        return data;
     }
 }
