@@ -1,4 +1,4 @@
-class NodeQueue<T>
+export class NodeQueue<T>
 {
     value: T;
     next: NodeQueue<T> | null;
@@ -10,7 +10,7 @@ class NodeQueue<T>
     }
 }
 
-class QueueAUX<T>
+export class QueueAUX<T>
 {
     #head: NodeQueue<T> | null;
     #tail: NodeQueue<T> | null;
