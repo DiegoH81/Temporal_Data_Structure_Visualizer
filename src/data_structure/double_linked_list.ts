@@ -122,4 +122,19 @@ class DoubleLinkedList
 
         return this.tail!.value;
     }
+
+    // Travel
+    public travel(): number[]
+    {
+        let data :number[] = []
+
+        let tmp : NodeDoubleLinkedList | null = this.head;
+        while(tmp != null)
+        {
+            data.push(tmp.value);
+            tmp = tmp.next;
+        }
+
+        return data;
+    }
 }
