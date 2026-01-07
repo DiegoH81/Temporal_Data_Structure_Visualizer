@@ -49,10 +49,16 @@ class Vector
         return this.data[inIdx];
     }
 
-        public set(inIdx: number, inValue: number): void | undefined
-        {
-            if (inIdx >= this.data.length || inIdx < 0)
-                return undefined;
-            this.data[inIdx] = inValue;
-        }
+    public set(inIdx: number, inValue: number): void | undefined
+    {
+        if (inIdx >= this.data.length || inIdx < 0)
+            return undefined;
+        this.data[inIdx] = inValue;
+    }
+
+    // Travel
+    public travel(): number[]
+    {
+        return this.data;
+    }
 }
