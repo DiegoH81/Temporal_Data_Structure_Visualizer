@@ -1,0 +1,36 @@
+.nav-card
+{
+    display: flex;
+    
+    position: sticky;
+    top: 0;
+    width: 100vw;
+    box-sizing: border-box;
+
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+    background-color: rgb(205, 220, 234);
+    padding: 1rem 1rem;
+}
+
+.nav-links
+{
+    display: flex;
+    margin-left: auto;
+    gap: 3rem;
+}
+
+.nav-link-card
+{
+    background-color: beige;
+    text-decoration: none;
+    font-size: x-large;
+    padding: 0.5rem 0.3rem;
+    border-radius: 8px;
+}
+
+.is-selected
+{
+    background-color: rgb(203, 203, 187);
+}
