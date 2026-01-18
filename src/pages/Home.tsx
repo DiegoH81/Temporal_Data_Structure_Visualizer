@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import PresentationCard from '../components/PresentationCard'
 import SelectionModeSwitch from '../components/SelectionModeSwitch'
+
+import InputCard from '../components/Input'
+
 import '../pages_styles/Home.css'
 
 function Home() {
@@ -44,6 +47,13 @@ function Home() {
         setSelectedCards([]);
     };
 
+    // Test Input
+
+    const addTemp = (value: number) => {console.log("Add: ", value)}
+    const deleteTemp = (value: number) => {console.log("Delete: ", value)}
+
+    // End test
+
     return (
         <>
             <h1>Menu</h1>
@@ -57,6 +67,10 @@ function Home() {
 
                 </div>
             )}
+
+            {/* INPUT TEMPORAL */}
+            <InputCard addFun={addTemp} deleteFun={deleteTemp} ></InputCard>
+            {/* END INPUT TEMPORAL*/}
 
             <div className="presentation-card-container">
                 {names.map((name) => (

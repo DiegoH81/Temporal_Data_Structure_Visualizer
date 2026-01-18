@@ -1,0 +1,25 @@
+.input-card
+{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.input-box
+{
+    padding: 12px;
+    border: 1.3px solid black;
+    border-radius: 4px;
+
+    box-sizing: border-box;
+    color: black;
+}
+
+.input-button
+{
+    height: 40px;
+    background-color: rgb(207, 205, 205);
+}
