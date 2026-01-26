@@ -1,18 +1,20 @@
-class NodeQueue{
-    value;
-    next;
+export class NodeQueue<T>
+{
+    value: T;
+    next: NodeQueue<T> | null;
 
-    constructor(inValue, inNext = null)
+    constructor(inValue : T, inNext : NodeQueue<T> | null = null)
     {
         this.value = inValue;
         this.next = inNext;
     }
 }
 
-class Queue{
-    #head;
-    #tail;
-    #_size;
+export class QueueAUX<T>
+{
+    #head: NodeQueue<T> | null;
+    #tail: NodeQueue<T> | null;
+    #_size: number;
 
     constructor()
     {
@@ -21,7 +23,7 @@ class Queue{
         this.#_size = 0;
     }
 
-    push(inValue)
+    push(inValue: T) : void
     {
         if(!this.#tail)
         {
@@ -37,11 +39,12 @@ class Queue{
         this.#_size++;
     }
 
-    pop()
+    pop() : T | undefined
     {
-        if(this.#_size <= 0) return undefined;
+        if(this.#_size <= 0 || this.#head == null) return undefined;
 
         let returnValue = this.#head.value;
+        
         if(this.#_size == 1)
         {
             this.#head = null;
@@ -51,8 +54,7 @@ class Queue{
         {
             this.#head = this.#head.next;
         }
-
-
+        
         this.#_size--;
         return returnValue;
     }

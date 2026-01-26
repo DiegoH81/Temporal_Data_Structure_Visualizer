@@ -1,10 +1,10 @@
 class NodeAVL
 {
-    value;
-    childs;
-    height;
+    value: number;
+    childs: [NodeAVL | null, NodeAVL | null];
+    height: number;
 
-    constructor(inValue,inLeft = null,inRight = null,inHeight = 1)
+    constructor(inValue: number,inLeft: NodeAVL | null = null,inRight: NodeAVL | null = null,inHeight: number = 1)
     {
         this.value = inValue;
         this.childs = [inLeft, inRight];
@@ -14,9 +14,14 @@ class NodeAVL
 
 class AVL
 {
-    #root;
+    #root: NodeAVL | null;
 
-    height(inNode)
+    constructor()
+    {
+        this.#root = null;
+    }
+
+    height(inNode: NodeAVL | null): number
     {
         if(inNode == null)
         {
@@ -25,7 +30,7 @@ class AVL
         return inNode.height;
     }
 
-    balanceFactor(inNode)
+    balanceFactor(inNode: NodeAVL | null): number
     {
         if(inNode == null)
         {
@@ -34,9 +39,9 @@ class AVL
         return this.height(inNode.childs[0]) - this.height(inNode.childs[1]);
     }
 
-    rightRotate(inNode)
+    rightRotate(inNode: NodeAVL): NodeAVL
     {
-        let x = inNode.childs[0];
+        let x = inNode.childs[0] as NodeAVL;
         let T2 = x.childs[1];
 
         x.childs[1] = inNode;
@@ -48,9 +53,9 @@ class AVL
         return x;
     }
 
-    leftRotate(inNode)
+    leftRotate(inNode: NodeAVL): NodeAVL
     {
-        let y = inNode.childs[1];
+        let y = inNode.childs[1] as NodeAVL;
         let T2 = y.childs[0];
 
         y.childs[0] = inNode;
@@ -62,12 +67,12 @@ class AVL
         return y;
     }
 
-    insert(inKey)
+    insert(inKey: number): void
     {
         this.#root = this.#insert(this.#root,inKey);
     }
 
-    #insert(inNode,inKey)
+    #insert(inNode: NodeAVL | null,inKey: number): NodeAVL
     {
         if(inNode == null)
         {
@@ -92,35 +97,35 @@ class AVL
         let balance = this.balanceFactor(inNode);
         
         //LL
-        if(balance > 1 && inKey < inNode.childs[0].value)
+        if(balance > 1 && inKey < inNode.childs[0]!.value)
         {
             return this.rightRotate(inNode);
         }
 
         //RR
-        if(balance < -1 && inKey > inNode.childs[1].value)
+        if(balance < -1 && inKey > inNode.childs[1]!.value)
         {
             return this.leftRotate(inNode);
         }
 
         // LR
-        if(balance > 1 && inKey > inNode.childs[0].value)
+        if(balance > 1 && inKey > inNode.childs[0]!.value)
         {
-            inNode.childs[0] = this.leftRotate(inNode.childs[0]);
+            inNode.childs[0] = this.leftRotate(inNode.childs[0]!);
             return this.rightRotate(inNode);
         }
 
         // RL
-        if(balance < -1 && inKey < inNode.childs[1].value)
+        if(balance < -1 && inKey < inNode.childs[1]!.value)
         {
-            inNode.childs[1] = this.rightRotate(inNode.childs[1]);
+            inNode.childs[1] = this.rightRotate(inNode.childs[1]!);
             return this.leftRotate(inNode);
         }
 
         return inNode;
     }
 
-    minValueNode(inNode)
+    minValueNode(inNode: NodeAVL): NodeAVL
     {
         let current = inNode;
         while (current.childs[0] != null)
@@ -130,12 +135,12 @@ class AVL
         return current;
     }
 
-    delete(inKey)
+    delete(inKey: number): void
     {
         this.#root = this.#delete(this.#root,inKey);
     }
 
-    #delete(inNode, inKey)
+    #delete(inNode: NodeAVL | null, inKey: number): NodeAVL | null
     {
         if (inNode == null)
         {
@@ -199,19 +204,17 @@ class AVL
         // LR
         if (balance > 1 && this.balanceFactor(inNode.childs[0]) < 0)
         {
-            inNode.childs[0] = this.leftRotate(inNode.childs[0]);
+            inNode.childs[0] = this.leftRotate(inNode.childs[0]!);
             return this.rightRotate(inNode);
         }
 
         // RL
         if (balance < -1 && this.balanceFactor(inNode.childs[1]) > 0)
         {
-            inNode.childs[1] = this.rightRotate(inNode.childs[1]);
+            inNode.childs[1] = this.rightRotate(inNode.childs[1]!);
             return this.leftRotate(inNode);
         }
 
         return inNode;
     }
-
-
 }

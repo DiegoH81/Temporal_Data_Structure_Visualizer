@@ -1,11 +1,11 @@
 class Rect 
 {
-    minX;
-    minY;
-    maxX;
-    maxY;
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
 
-    constructor(inMinX = 0, inMinY = 0, inMaxX = 0, inMaxY = 0) 
+    constructor(inMinX: number = 0, inMinY: number = 0, inMaxX: number = 0, inMaxY: number = 0) 
     {
         this.minX = inMinX;
         this.minY = inMinY;
@@ -13,7 +13,7 @@ class Rect
         this.maxY = inMaxY;
     }
 
-    combine(inOtherRect) 
+    combine(inOtherRect: Rect): Rect 
     {
         return new Rect(
             Math.min(this.minX, inOtherRect.minX),
@@ -23,21 +23,21 @@ class Rect
         );
     }
 
-    area() 
+    area(): number 
     {
         return (this.maxX - this.minX) * (this.maxY - this.minY);
     }
 }
 
-const MAX_ENTRIES = 4;
-const MIN_ENTRIES = Math.ceil(MAX_ENTRIES / 2);
+const MAX_ENTRIES: number = 4;
+const MIN_ENTRIES: number = Math.ceil(MAX_ENTRIES / 2);
 
 class Entry 
 {
-    rect;
-    child;
+    rect: Rect;
+    child: Node | null;
 
-    constructor(inRect, inChild = null) 
+    constructor(inRect: Rect, inChild: Node | null = null) 
     {
         this.rect = inRect;
         this.child = inChild;
@@ -46,10 +46,10 @@ class Entry
 
 class Node 
 {
-    isLeaf;
-    entries;
+    isLeaf: boolean;
+    entries: Entry[];
 
-    constructor(inIsLeaf = true) 
+    constructor(inIsLeaf: boolean = true) 
     {
         this.isLeaf = inIsLeaf;
         this.entries = [];
@@ -57,28 +57,28 @@ class Node
 }
 
 class RTree {
-    root;
+    root: Node;
 
     constructor() 
     {
         this.root = new Node(true);
     }
 
-    insert(inValue) 
+    insert(inValue: Rect): void 
     {
         let node = this.root;
-        let path = [];
+        let path: { node: Node; index: number }[] = [];
 
         while (!node.isLeaf) 
         {
             let idx = this.chooseSubtree(node, inValue);
             path.push({ node: node, index: idx });
-            node = node.entries[idx].child;
+            node = node.entries[idx].child as Node;
         }
 
         node.entries.push(new Entry(inValue));
 
-        let sibling = null;
+        let sibling: Node | null = null;
         if (node.entries.length > MAX_ENTRIES) 
         {
             sibling = this.splitNodeQuadratic(node);
@@ -87,7 +87,7 @@ class RTree {
         this.adjustTree(path, node, sibling);
     }
 
-    chooseSubtree(inNode, inValue) 
+    chooseSubtree(inNode: Node, inValue: Rect): number 
     {
         let minEnlargement = Infinity;
         let bestIdx = 0;
@@ -106,7 +106,7 @@ class RTree {
         return bestIdx;
     }
 
-   adjustTree(inPath, inNode, inSibling) 
+   adjustTree(inPath: { node: Node; index: number }[], inNode: Node, inSibling: Node | null): void 
    {
         let node = inNode;
         let sibling = inSibling;
@@ -146,7 +146,7 @@ class RTree {
         }
     }
 
-    pickSeeds(inEntries) {
+    pickSeeds(inEntries: Entry[]): [number, number] {
         let maxWaste = -Infinity;
         let seed1 = 0;
         let seed2 = 1;
@@ -169,7 +169,7 @@ class RTree {
         return [seed1, seed2];
     }
 
-    splitNodeQuadratic(node) {
+    splitNodeQuadratic(node: Node): Node {
         const entries = node.entries;
         node.entries = [];
 
@@ -227,7 +227,7 @@ class RTree {
         return sibling;
     }
 
-    boundingRect(inEntries) 
+    boundingRect(inEntries: Entry[]): Rect 
     {
         let minX = Infinity, minY = Infinity;
         let maxX = -Infinity, maxY = -Infinity;
